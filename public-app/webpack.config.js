@@ -1,10 +1,11 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
+var outputPath = '../src/main/resources/static'; // spring boot static web content path
 
 module.exports = {
   entry: './src/main.js',
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, outputPath),
     publicPath: '/dist/',
     filename: 'build.js'
   },
@@ -76,33 +77,45 @@ module.exports = {
     extensions: ['*', '.js', '.vue', '.json']
   },
   devServer: {
-    historyApiFallback: true,
-    noInfo: true,
-    overlay: true
-  },
-  performance: {
-    hints: false
-  },
-  devtool: '#eval-source-map'
+    // historyApiFallback: true,
+    /*
+      "true"일 경우 기존 에셋(.html 등)과 매핑되지 않는 웹팩 개발 서버에 대한 모든 요청이 곧바로 /로 라우팅
+      출처: http://purple-dev.tistory.com/23
+    */
+
+    noInfo: true, // Not showing messages on terminal
+    overlay: true, // Display compile error or warning on browser
+    port: 8081, // Set dev server port
+    proxy: {
+      "/": {
+        target: 'http://localhost:8080', // spring boot info
+        secure: false
+      }
+    }
+},
+performance: {
+hints: false
+},
+devtool: '#eval-source-map'
 }
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ])
+module.exports.devtool = '#source-map'
+// http://vue-loader.vuejs.org/en/workflow/production.html
+module.exports.plugins = (module.exports.plugins || []).concat([
+new webpack.DefinePlugin({
+  'process.env': {
+    NODE_ENV: '"production"'
+  }
+}),
+new webpack.optimize.UglifyJsPlugin({
+  sourceMap: true,
+  compress: {
+    warnings: false
+  }
+}),
+new webpack.LoaderOptionsPlugin({
+  minimize: true
+})
+])
 }
