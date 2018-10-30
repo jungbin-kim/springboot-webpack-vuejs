@@ -1,6 +1,8 @@
 package com.apress.spring.domain;
 
 
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,6 +13,7 @@ import java.util.Date;
  */
 @Entity
 public class Journal {
+    @ApiModelProperty(value = "생성: NONE, 수정: Path value")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
